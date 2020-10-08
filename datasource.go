@@ -58,8 +58,9 @@ type JSONData struct {
 	CustomMetricsNamespaces string `json:"customMetricsNamespaces,omitempty"`
 
 	// Used by OpenTSDB
-	TsdbVersion    string `json:"tsdbVersion,omitempty"`
-	TsdbResolution string `json:"tsdbResolution,omitempty"`
+	TsdbVersion    int8   `json:"tsdbVersion,omitempty"`
+	TsdbResolution int8   `json:"tsdbResolution,omitempty"`
+	LookupLimit    string `json:"lookupLimit,omitempty"`
 
 	// Used by MSSQL
 	Encrypt string `json:"encrypt,omitempty"`
@@ -144,6 +145,17 @@ func (c *Client) DataSource(id int64) (*DataSource, error) {
 	return result, err
 }
 
+// DataSources fetches and returns all the Grafana data sources.
+func (c *Client) DataSources() (*[]DataSource, error) {
+	path := "/api/datasources/"
+	result := &[]DataSource{}
+	err := c.request("GET", path, nil, nil, result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, err
+}
 // DeleteDataSource deletes the Grafana data source whose ID it's passed.
 func (c *Client) DeleteDataSource(id int64) error {
 	path := fmt.Sprintf("/api/datasources/%d", id)
